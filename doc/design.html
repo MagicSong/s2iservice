@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>design.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+	font-size: 14px;
+	padding: 0 12px;
+	line-height: 22px;
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	color: #4080D0;
+	text-decoration: none;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+	font-size: inherit;
+	line-height: auto;
+}
+
+a:hover {
+	color: #4080D0;
+	text-decoration: underline;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left: 5px solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 14px;
+	line-height: 19px;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+.mac code {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+/** Theming */
+
+.vscode-light,
+.vscode-light pre code {
+	color: rgb(30, 30, 30);
+}
+
+.vscode-dark,
+.vscode-dark pre code {
+	color: #DDD;
+}
+
+.vscode-high-contrast,
+.vscode-high-contrast pre code {
+	color: white;
+}
+
+.vscode-light code {
+	color: #A31515;
+}
+
+.vscode-dark code {
+	color: #D7BA7D;
+}
+
+.vscode-light pre:not(.hljs),
+.vscode-light code > div {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre:not(.hljs),
+.vscode-dark code > div {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre:not(.hljs),
+.vscode-high-contrast code > div {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+.vscode-light blockquote,
+.vscode-dark blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.vscode-high-contrast blockquote {
+	background: transparent;
+	border-color: #fff;
+}
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family:  "Meiryo", "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="file:///c%3A/Users/Progr/go/src/qingcloud.com/s2iweb/vscode-markdown.css" type="text/css">
+</head>
+<body>
+<h1 id="source2image-%E8%AE%BE%E8%AE%A1%E5%8F%82%E8%80%83">Source2Image 设计参考</h1>
+<p>为了降低负担，个人建议参考Openshift的设计，地址在https://139.198.120.203:8443/console/catalog，用户名和密码都是system，首页提供几个现成模板，用户点击语言和框架，然后配置一下仓库地址等参数，后台运行完成之后告知用户。现在需要输入的参数有：Source URL（git地址），Tag（镜像推送位置），Env环境变量。除此之外，还有针对特定语言的一些参数，现在还没有完整的测试。</p>
+<p>如果来得及可以设计用户自定义Source2Image的页面，那么需要的参数如下：</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">type</span> S2IRequest <span class="hljs-keyword">struct</span> {
+	SourceURL            <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"source_url"`</span><span class="hljs-comment">//git地址</span>
+	BuilderImage         <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"builder_image"`</span><span class="hljs-comment">//最终镜像的基础镜像或者用于编译的镜像（如果指定了runtime image）。</span>
+	Tag                  <span class="hljs-keyword">string</span> <span class="hljs-comment">//镜像推送地址</span>
+	CallbackURL          <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"callback_url,omitempty"`</span><span class="hljs-comment">//完成之后执行的URL</span>
+	ContextDir           <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"context_dir,omitempty"`</span><span class="hljs-comment">//代码的位置，相对路径</span>
+	RuntimeImage         <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"runtime_image,omitempty"`</span><span class="hljs-comment">//运行时镜像（默认上面的BuilderImage为运行时镜像，如果单独指定此项的话，表示build和运行是分开的）</span>
+	RuntimeArtifact      <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"runtime_artifact.omitempty"`</span><span class="hljs-comment">//编译文件的位置（和runtimeImage字段需要同时指定）</span>
+	EnvironmentVariables <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"environment_variables,omitempty"`</span><span class="hljs-comment">//环境变量</span>
+	Custom               <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"custom,omitempty"`</span><span class="hljs-comment">//用户自己编辑s2i参数，如果不为空，覆盖上面所有</span>
+}
+</div></code></pre>
+<h2 id="%E6%97%A5%E5%BF%97">日志</h2>
+<h3 id="request">request</h3>
+<p>URL:    s2i.kubesphere.com/api/v1alpha1/jobs/:jid/logs?from_id=0&amp;retry_id=0
+其中的jid是任务id，from_id是日志的起始id，默认从0开始，如果需要实时日志的话，这个from_id需要增加。retry_id表明任务运行重试ID,默认为0，非0表示该任务第几次重试时的日志。</p>
+<h3 id="response">response</h3>
+<pre class="hljs"><code><div>[
+    {
+        <span class="hljs-attr">"JobID"</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">"Text"</span>: <span class="hljs-string">"tar: src/.gitignore: time stamp 2018-09-12 04:15:44 is 1.470437366 s in the future"</span>,
+        <span class="hljs-attr">"LogTime"</span>: <span class="hljs-string">"2018-09-12T04:15:46Z"</span>,
+        <span class="hljs-attr">"RetryID"</span>: <span class="hljs-number">0</span>
+    },
+    {
+        <span class="hljs-attr">"JobID"</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">"Text"</span>: <span class="hljs-string">"tar: src/README.md: time stamp 2018-09-12 04:15:44 is 1.445028489 s in the future"</span>,
+        <span class="hljs-attr">"LogTime"</span>: <span class="hljs-string">"2018-09-12T04:15:46Z"</span>,
+        <span class="hljs-attr">"RetryID"</span>: <span class="hljs-number">0</span>
+    },
+    {
+        <span class="hljs-attr">"JobID"</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">"Text"</span>: <span class="hljs-string">"tar: src/conf/reload.py: time stamp 2018-09-12 04:15:44 is 1.444861131 s in the future"</span>,
+        <span class="hljs-attr">"LogTime"</span>: <span class="hljs-string">"2018-09-12T04:15:46Z"</span>,
+        <span class="hljs-attr">"RetryID"</span>: <span class="hljs-number">0</span>
+    },
+    {
+        <span class="hljs-attr">"JobID"</span>: <span class="hljs-number">1</span>,
+        <span class="hljs-attr">"Text"</span>: <span class="hljs-string">"tar: src/conf: time stamp 2018-09-12 04:15:44 is 1.444834403 s in the future"</span>,
+        <span class="hljs-attr">"LogTime"</span>: <span class="hljs-string">"2018-09-12T04:15:46Z"</span>,
+        <span class="hljs-attr">"RetryID"</span>: <span class="hljs-number">0</span>
+    }
+]
+</div></code></pre>
+<h2 id="%E6%A8%A1%E6%9D%BF">模板</h2>
+<blockquote>
+<p>目前alpha版本只支持基于模板的Source2Image功能，后端提供一系列模板供前端使用。</p>
+</blockquote>
+<h3 id="request">request</h3>
+<p>GET  http://s2i.kubesphere.com/api/v1alpha1/templates HTTP/1.1
+Authorization: Basic admin admins</p>
+<h3 id="response">response</h3>
+<pre class="hljs"><code><div>[
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">6</span>,
+    <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Java+Maven"</span>,
+    <span class="hljs-attr">"description_en"</span>: <span class="hljs-string">"Build Java source code into docker image with Maven (openjdk 1.8.0)"</span>,
+    <span class="hljs-attr">"description_zh"</span>: <span class="hljs-string">"将Java代码一步制成Docker镜像（maven项目,openjdk 1.8.0）"</span>,
+    <span class="hljs-attr">"builder_image"</span>: <span class="hljs-string">"harbor.kubesphere.com/devops/s2i-maven-java:latest"</span>,
+    <span class="hljs-attr">"Status"</span>: <span class="hljs-string">"beta"</span>,
+    <span class="hljs-attr">"Language"</span>: <span class="hljs-string">"java"</span>,
+    <span class="hljs-attr">"Used"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"fields"</span>: [
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">1</span>, 
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">6</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Source"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"代码仓库地址，目前支持git和http/https开头的仓库地址"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"url of source code, currently only git and http/https are supported"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text"</span>,
+        <span class="hljs-attr">"constraints"</span>: <span class="hljs-string">"URL"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">2</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">6</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"MVN_GOALS"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"指定maven执行的命令"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Maven goals to execute"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"clean package"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">3</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">6</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"MVN_SKIP_TESTS"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"指定是否跳过测试"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"If tests should be skipped"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"checkbox,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"true"</span>
+      }
+    ]
+  },
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">7</span>,
+    <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Java+Maven+Tomcat"</span>,
+    <span class="hljs-attr">"description_en"</span>: <span class="hljs-string">"Platform for building and running Java applications on Apache-Tomcat"</span>,
+    <span class="hljs-attr">"description_zh"</span>: <span class="hljs-string">"将Tomcat程序一步制成Docker镜像"</span>,
+    <span class="hljs-attr">"builder_image"</span>: <span class="hljs-string">"sarcouy/s2i-tomcat"</span>,
+    <span class="hljs-attr">"Status"</span>: <span class="hljs-string">"beta"</span>,
+    <span class="hljs-attr">"Language"</span>: <span class="hljs-string">"java"</span>,
+    <span class="hljs-attr">"Used"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"fields"</span>: [
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">4</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">7</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Source"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"代码仓库地址，目前支持git和http/https开头的仓库地址"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"url of source code, currently only git and http/https are supported"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text"</span>,
+        <span class="hljs-attr">"constraints"</span>: <span class="hljs-string">"URL"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">5</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">7</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"MVN_ARGS"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"指定maven执行的命令"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Maven goals to execute"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"clean package -DskipTests"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">6</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">7</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Image_Version"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"镜像版本"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Image versions"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"select,tag"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"8-jdk8-mvn3.5.0"</span>,
+        <span class="hljs-attr">"opts"</span>: <span class="hljs-string">"6-jdk7-mvn3.2.5,6-jdk7-mvn3.3.9,6-jdk8-mvn3.2.5,6-jdk8-mvn3.3.9,7-jdk7-mvn3.2.5,7-jdk7-mvn3.3.9,7-jdk8-mvn3.2.5,7-jdk8-mvn3.3.9,8-jdk7-mvn3.2.5,8-jdk7-mvn3.3.9,8-jdk8-mvn3.2.5,8-jdk8-mvn3.3.9,8-jdk7-mvn3.5.0,8-jdk8-mvn3.5.0,8.5-jdk8-mvn3.2.5,8.5-jdk8-mvn3.3.9,8.5-jdk8-mvn3.5.0"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">7</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">7</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"WAR_NAME"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"war包的名称，包括后缀.war"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Name of the war file to move into webapps directory after maven build WAR_NAME=myApp.war"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>
+      }
+    ]
+  },
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">8</span>,
+    <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"python3.5 + Django"</span>,
+    <span class="hljs-attr">"description_en"</span>: <span class="hljs-string">"Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design"</span>,
+    <span class="hljs-attr">"description_zh"</span>: <span class="hljs-string">"将Python web程序一步制成Docker镜像,Django框架+Python3.5"</span>,
+    <span class="hljs-attr">"builder_image"</span>: <span class="hljs-string">"centos/python-35-centos7"</span>,
+    <span class="hljs-attr">"Status"</span>: <span class="hljs-string">"beta"</span>,
+    <span class="hljs-attr">"Language"</span>: <span class="hljs-string">"python"</span>,
+    <span class="hljs-attr">"Used"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"fields"</span>: [
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">8</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">8</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Source"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"代码仓库地址，目前支持git和http/https开头的仓库地址"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"url of source code, currently only git and http/https are supported"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text"</span>,
+        <span class="hljs-attr">"constraints"</span>: <span class="hljs-string">"URL"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">9</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">8</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"APP_SCRIPT"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"APP启动的shell脚本"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Used to run the application from a script file"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"app.sh"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">10</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">8</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"APP_FILE"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"APP启动的python脚本"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Used to run the application from a Python script"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"app.py"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">11</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">8</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"APP_HOME"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"APP启动根目录"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"specify a sub-directory in which the application to be run is contained"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment,optional"</span>
+      }
+    ]
+  },
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">9</span>,
+    <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Nodejs"</span>,
+    <span class="hljs-attr">"description_en"</span>: <span class="hljs-string">"Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code outside of a browser"</span>,
+    <span class="hljs-attr">"description_zh"</span>: <span class="hljs-string">"将Nodejs程序打包成镜像，然后部署到各个地方"</span>,
+    <span class="hljs-attr">"builder_image"</span>: <span class="hljs-string">"fortinj66/centos7-s2i-nodejs:8.9.4"</span>,
+    <span class="hljs-attr">"Status"</span>: <span class="hljs-string">"beta"</span>,
+    <span class="hljs-attr">"Language"</span>: <span class="hljs-string">"javascript"</span>,
+    <span class="hljs-attr">"Used"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"fields"</span>: [
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">12</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">9</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Source"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"代码仓库地址，目前支持git和http/https开头的仓库地址"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"url of source code, currently only git and http/https are supported"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text"</span>,
+        <span class="hljs-attr">"constraints"</span>: <span class="hljs-string">"URL"</span>
+      }
+    ]
+  },
+  {
+    <span class="hljs-attr">"id"</span>: <span class="hljs-number">11</span>,
+    <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"php 5.6"</span>,
+    <span class="hljs-attr">"description_en"</span>: <span class="hljs-string">"PHP is a widely-used open source general-purpose scripting language that is especially suited for web development and can be embedded into HTML."</span>,
+    <span class="hljs-attr">"description_zh"</span>: <span class="hljs-string">"将PHP web程序打包成镜像，然后部署到各个地方"</span>,
+    <span class="hljs-attr">"builder_image"</span>: <span class="hljs-string">"rvhoyt/s2i-php-56"</span>,
+    <span class="hljs-attr">"Status"</span>: <span class="hljs-string">"beta"</span>,
+    <span class="hljs-attr">"Language"</span>: <span class="hljs-string">"php"</span>,
+    <span class="hljs-attr">"Used"</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">"fields"</span>: [
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">18</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">11</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"Source"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"代码仓库地址，目前支持git和http/https开头的仓库地址"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"url of source code, currently only git and http/https are supported"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text"</span>,
+        <span class="hljs-attr">"constraints"</span>: <span class="hljs-string">"URL"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">19</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">11</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"DISPLAY_ERRORS"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"控制PHP是否会输出错误信息"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Controls whether or not and where PHP will output errors, notices and warnings"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"select,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"on"</span>,
+        <span class="hljs-attr">"opts"</span>: <span class="hljs-string">"on,off"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">20</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">11</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"SESSION_NAME"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"session字段的名称"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"name of session"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"PHPSESSID"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">21</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">11</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"SESSION_HANDLER"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"session的管理方式"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Method for saving sessions"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"files"</span>
+      },
+      {
+        <span class="hljs-attr">"id"</span>: <span class="hljs-number">22</span>,
+        <span class="hljs-attr">"template_id"</span>: <span class="hljs-number">11</span>,
+        <span class="hljs-attr">"Name"</span>: <span class="hljs-string">"DOCUMENTROOT"</span>,
+        <span class="hljs-attr">"tips_zh"</span>: <span class="hljs-string">"应用的根目录"</span>,
+        <span class="hljs-attr">"tips_en"</span>: <span class="hljs-string">"Path that defines the DocumentRoot for your application"</span>,
+        <span class="hljs-attr">"field_type"</span>: <span class="hljs-string">"text,environment"</span>,
+        <span class="hljs-attr">"default_value"</span>: <span class="hljs-string">"/"</span>
+      }
+    ]
+  }
+]
+</div></code></pre>
+<p>返回的是一个Template的数组。Template对象有几个重要的属性，一个是<code>builder_image</code>，这个属性前端在生成s2ijob的时候要用到，目前这个属性是readonly的，不能让用户修改；还有一个就是<code>fields</code>属性，<code>fields</code>告诉前端应该如何生成这个模板的页面。fields是一个<code>fieldinfo</code>的数组，<code>fieldinfo</code>的定义如下(下面是<code>go</code>语言的定义，具体json中的字段参看上面的reponse)：</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">type</span> FieldInfo <span class="hljs-keyword">struct</span> {
+	ID           <span class="hljs-keyword">uint</span> <span class="hljs-string">`json:"id,omitempty" db:"id"`</span>
+	TemplateID   <span class="hljs-keyword">uint</span> <span class="hljs-string">`json:"template_id,omitempty" db:"template_id"`</span>
+	Name         <span class="hljs-keyword">string</span>
+	TipsZH       <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"tips_zh,omitempty" db:"tips_zh"`</span>
+	TipsEN       <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"tips_en,omitempty" db:"tips_en"`</span>
+	FieldType    <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"field_type" db:"field_type"`</span>
+	DefaultValue <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"default_value,omitempty" db:"default_value"`</span>
+	Constraints  <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"constraints,omitempty"`</span>
+	Opts         <span class="hljs-keyword">string</span> <span class="hljs-string">`json:"opts,omitempty"`</span>
+}
+</div></code></pre>
+<p>每一个<code>fieldinfo</code>都对应了可能需要用户输入的<strong>参数</strong>。</p>
+<ol>
+<li>
+<p><code>Name</code>表示这个参数的名称，后续如果是以环境变量的方式传给s2ijob的话需要用这个Name。</p>
+</li>
+<li>
+<p><code>FieldType</code>表示这个参数的类型，它是一个以逗号分隔的属性，第一个表示参数的UI显示类型(仅供前端参考，具体是什么元素还需前端和设计考虑一下)，下表给出了我理解的对应关系：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>web元素</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>text</td>
+<td><input type='text'></td>
+</tr>
+<tr>
+<td>select</td>
+<td><select></td>
+</tr>
+<tr>
+<td>checkbox</td>
+<td><input type="checkbox">checkbox在json中对应true和false</td>
+</tr>
+</tbody>
+</table>
+<p>如果有第二个参数，表明了这个参数应该以何种方式传递给s2ijob，现在有下面几种形式：</p>
+<ul>
+<li>environment： 以环境变量的形式，s2ijob有一个可以接受环境变量的参数。</li>
+<li>tag: 放在builder_image后面，以tag的形式提供。这种用于让用户选择builder_image的版本，现在只有几个模板支持。
+如果有第三个参数（值为optional），表明了这个参数是可选参数，UI可以考虑放到可选参数一栏。</li>
+</ul>
+</li>
+<li>
+<p><code>DefaultValue</code>表明了这个参数的默认值</p>
+</li>
+<li>
+<p><code>Constraints</code>表示这个参数的限制，目前只有Source这个参数有一个<code>URL</code>的限制，表示用户输入的必须是一个合法的URL。</p>
+</li>
+<li>
+<p><code>Opts</code>用于FieldType是<code>select</code>的参数，表示其所有可能的options。</p>
+</li>
+</ol>
+<blockquote>
+<p>每一个模板都有一个<code>Source</code>参数，表示代码仓库的地址，创建s2ijob的时候是以<code>&quot;source_url&quot;:&quot;xxxxx&quot;</code>传递过去的。</p>
+</blockquote>
+<hr>
+<h1 id="%E7%8E%B0%E5%9C%A8%E6%B5%8B%E8%AF%95%E9%80%9A%E8%BF%87%E7%9A%84%E8%AF%AD%E8%A8%80%E6%A1%86%E6%9E%B6">现在测试通过的语言框架</h1>
+<h2 id="python">Python</h2>
+<ol>
+<li>python3.5 + Django
+sample</li>
+</ol>
+<pre class="hljs"><code><div>   {<span class="hljs-attr">"source_url"</span>:<span class="hljs-string">"https://github.com/openshift/django-ex"</span>,<span class="hljs-attr">"builder_image"</span>:<span class="hljs-string">"centos/python-35-centos7"</span>,<span class="hljs-attr">"tag"</span>:<span class="hljs-string">"hello-python"</span>}
+</div></code></pre>
+<p>输入参数只有两个，git地址和目标镜像</p>
+<h2 id="java">Java</h2>
+<blockquote>
+<p>如果java是用maven编译的，可以添加<code>&quot;reuse_maven_local_rep&quot;:true</code>参数保留maven本地依赖，下次继续运行这个任务的时候速度会明显提升。</p>
+</blockquote>
+<ol>
+<li>openjdk 1.8+maven</li>
+</ol>
+<p>sample</p>
+<pre class="hljs"><code><div>{<span class="hljs-attr">"source_url"</span>:<span class="hljs-string">"https://github.com/MagicSong/simple-java-maven-app.git"</span>,<span class="hljs-attr">"builder_image"</span>:<span class="hljs-string">"appuio/s2i-maven-java"</span>,<span class="hljs-attr">"tag"</span>:<span class="hljs-string">"hello-java"</span>}
+</div></code></pre>
+<p>输入参数：
++ 仓库地址
++ 镜像名称
++ （可选）mvn命令，默认<code>clean package</code>
++ (可选) 是否跳过test 默认true</p>
+<ol start="2">
+<li>openjdk 1.8+maven+tomcat
+sample</li>
+</ol>
+<pre class="hljs"><code><div>{<span class="hljs-attr">"source_url"</span>:<span class="hljs-string">"https://github.com/daticahealth/java-tomcat-maven-example.git"</span>,<span class="hljs-attr">"builder_image"</span>:<span class="hljs-string">"sarcouy/s2i-tomcat:8.5-jdk8-mvn3.3.9"</span>,<span class="hljs-attr">"tag"</span>:<span class="hljs-string">"hello-java-tomcat"</span>,<span class="hljs-attr">"environment_variables"</span>:<span class="hljs-string">"WAR_NAME=java-tomcat-maven-example.war"</span>}
+</div></code></pre>
+<p>输入参数：
++ 仓库地址
++ 镜像名称
++ war的名称，包含后缀</p>
+<h2 id="nodejs">Nodejs</h2>
+<ol>
+<li>nodejs8+express（此例子适合大部分nodejs程序，不仅仅express）
+sample</li>
+</ol>
+<pre class="hljs"><code><div>{<span class="hljs-attr">"source_url"</span>:<span class="hljs-string">"https://github.com/MagicSong/node-js-sample.git"</span>,<span class="hljs-attr">"builder_image"</span>:<span class="hljs-string">"fortinj66/centos7-s2i-nodejs:8.9.4"</span>,<span class="hljs-attr">"tag"</span>:<span class="hljs-string">"hello-nodejs"</span>}
+</div></code></pre>
+<p>输入参数：
++ 仓库地址
++ 镜像名称</p>
+<h2 id="php">Php</h2>
+<ol>
+<li>php 5.6</li>
+</ol>
+<pre class="hljs"><code><div>{<span class="hljs-attr">"source_url"</span>:<span class="hljs-string">"https://github.com/MagicSong/opsworks-demo-php-simple-app.git"</span>,<span class="hljs-attr">"builder_image"</span>:<span class="hljs-string">"rvhoyt/s2i-php-56"</span>,<span class="hljs-attr">"tag"</span>:<span class="hljs-string">"hello-php"</span>}
+</div></code></pre>
+
+</body>
+</html>

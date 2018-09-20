@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nexus-ingress
+  namespace: kube-devops
+  annotations:
+    ingress.kubernetes.io/proxy-body-size: 100m
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  # CHANGE ME
+  - host: nexus.kubesphere.com 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nexus-service
+          servicePort: 8081
+  # CHANGE ME
+  - host: docker.kubesphere.com 
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nexus-service
+          servicePort: 5000

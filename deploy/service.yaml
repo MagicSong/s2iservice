@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: s2iserver
+  name: s2iserver
+  namespace: kube-devops
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8001
+      targetPort: 8001
+      name: s2iserver-port
+  selector:
+    app: s2iserver

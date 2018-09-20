@@ -1,0 +1,9 @@
+FROM ubuntu
+
+WORKDIR /usr/local/bin
+RUN apt-get update && apt-get -y install git
+ENV DOCKER_HOST=192.168.98.8:2375
+
+ADD . /usr/local/bin/
+RUN s2i version
+ENTRYPOINT [ "server" ]

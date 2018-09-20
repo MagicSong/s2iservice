@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: s2iserver-config
+    namespace: kube-devops
+data:
+    DEVOPSPHERE_MYSQL_HOST: devopsphere-mysql
+    DEVOPSPHERE_MYSQL_PORT: "3306" 
+    DEVOPSPHERE_MYSQL_USER: root
+    DEVOPSPHERE_MYSQL_PASSWORD: welcometodevops
+    DEVOPSPHERE_MYSQL_DATABASE: TestDB
+    DEVOPSPHERE_GITLAB_ADDRESS: "http://magicsong.test.com:6080/api/v4"
+    DEVOPSPHERE_GITLAB_USER: admin
+    DEVOPSPHERE_GITLAB_PASSWORD: "123"
+    DEVOPSPHERE_HARBOR_ENDPOINT: "https://harbor-harbor-ui"
+    DEVOPSPHERE_HARBOR_USERNAME: admin
+    DEVOPSPHERE_HARBOR_PASSWORD: Harbor123
+    DEVOPSPHERE_REDIS_ADDRESS: "redis-ha-redis-ha-master-svc:6379"
+    DEVOPSPHERE_REDIS_PASSWORD: ""

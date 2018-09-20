@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s2iserver
+  namespace: kube-devops
+  labels:
+    app: s2iserver
+spec:
+  selector:
+    matchLabels:
+      app: s2iserver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: s2iserver
+    spec:
+      hostAliases:
+      - ip: "192.168.98.8"
+        hostnames:
+        - "magicsong.test.com"
+      containers:
+      - image: harbor.kubesphere.com/devops/s2i-builder:0.1
+        imagePullPolicy: Always
+        name: s2iserver
+        envFrom:
+         - configMapRef:
+             name: s2iserver-config
+        ports:
+          - containerPort: 8001

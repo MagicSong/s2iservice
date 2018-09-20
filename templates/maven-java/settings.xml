@@ -1,0 +1,46 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+  <profiles>
+   <profile>
+     <id>myprofile</id>
+     <repositories>
+       <repository>
+         <id>devops</id>
+         <name>devops repo</name>
+         <url>http://${NEXUS_ADDRESS}/repository/maven-central/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
+        </snapshots>
+        <layout>default</layout>
+       </repository>
+     </repositories>
+     <pluginRepositories>
+    <pluginRepository>
+        <id>maven.oschina.net</id>
+        <name>oschina maven repository</name>
+        <url>http://${NEXUS_ADDRESS}/repository/maven-central/</url>
+        <releases>
+            <enabled>true</enabled>
+            <updatePolicy>daily</updatePolicy>
+            <checksumPolicy>ignore</checksumPolicy>
+        </releases>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <layout>default</layout>
+    </pluginRepository>
+</pluginRepositories>
+   </profile>
+ </profiles>
+ 
+ <activeProfiles>
+   <activeProfile>myprofile</activeProfile>
+ </activeProfiles>
+</settings>
