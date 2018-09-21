@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
     "source_url":"https://github.com/MagicSong/simple-java-maven-app.git",
-    "builder_image":"appuio/s2i-maven-java",
+    "builder_image":"appuio1234/s2i-maven-java",
     "tag":"harbor.kubesphere.com/devops/hello-java",
     "export":false,
     "push_username":"admin",
