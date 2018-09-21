@@ -62,3 +62,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/globalsign/mgo"
+
+[[constraint]]
+  name = "github.com/fatih/color"
+  version = "1.7.0"

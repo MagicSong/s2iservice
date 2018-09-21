@@ -55,6 +55,8 @@ func (w *Worker) Work(r *Resources) {
 		})
 		connection := rmq.OpenConnectionWithRedisClient(r.cfg.Redis.RMQName, client)
 		cleaner := rmq.NewCleaner(connection)
+		logger.Info("Begin to clean Queue")
+		cleaner.Clean()
 		for range time.Tick(CleanInterval * time.Minute) {
 			logger.Info("Begin to clean Queue")
 			cleaner.Clean()
@@ -84,16 +86,33 @@ func (w *Worker) NewConsumer(tag int) *S2IConsumer {
 		worker: w,
 	}
 }
+
+func (s *S2IConsumer) getJob(jid string, username string) (*models.S2IJob, error) {
+	job := &models.S2IJob{}
+	filter := bson.NewDocument(bson.EC.String("_id", jid), bson.EC.String("username", username))
+	err := s.worker.Db.Collection(constants.S2IJobCollectionName).FindOne(context.Background(), filter).Decode(job)
+	if err != nil {
+		return nil, err
+	}
+	return job, nil
+}
 func (s *S2IConsumer) Consume(delivery rmq.Delivery) {
 	s.before = time.Now()
 	coll := s.worker.Db.Collection(constants.S2IJobCollectionName)
-	var job models.S2IJob
-	if err := json.Unmarshal([]byte(delivery.Payload()), &job); err != nil {
+	var redisJob models.RedisJob
+	if err := json.Unmarshal([]byte(delivery.Payload()), &redisJob); err != nil {
 		logger.Error("Error: %v", err)
 		delivery.Reject()
 		return
 	}
-	s.job = &job
+
+	job, err := s.getJob(redisJob.ID, redisJob.Username)
+	if err != nil {
+		logger.Error("Detected noexit or deleted job <%v>!\nError: %v", redisJob, err)
+		delivery.Ack()
+		return
+	}
+	s.job = job
 	// perform task
 	cmd := exec.Command(CMD, job.Parameters...)
 	stdout, _ := cmd.StderrPipe()
@@ -108,9 +127,12 @@ func (s *S2IConsumer) Consume(delivery rmq.Delivery) {
 	case <-done:
 		delivery.Ack()
 	case e := <-errChan:
-		logger.Error("There was error in task %d, Error: %v", job.ID, e)
+		logger.Error("There was error in task %s, Error: %v", job.ID, e)
 		updateJobStatusAndInfo(coll, s.job, models.Error, e.Error())
-		incremRetry(coll, s.job.ID)
+		err = incremRetry(coll, s.job.ID)
+		if err != nil {
+			logger.Error("error: %v", err)
+		}
 		delivery.Reject()
 	}
 	s.count++
@@ -168,7 +190,7 @@ func (s *S2IConsumer) storeOutputIntoDatabase(out io.ReadCloser) (err error) {
 	scanner.Split(bufio.ScanLines)
 	for scanner.Scan() {
 		m := scanner.Text()
-		logger.Info("(job-id:%d) %s", s.job.ID, m)
+		logger.Info("(job-id:%s) %s", s.job.ID, m)
 		if strings.Contains(m, "errorDetail") {
 			return fmt.Errorf("%s", m)
 		}
@@ -197,7 +219,7 @@ func (s *S2IConsumer) storeOutputIntoDatabase(out io.ReadCloser) (err error) {
 }
 func updateJobStatusAndInfo(db *mongo.Collection, job *models.S2IJob, status models.JobStatus, info string) error {
 	filter := bson.NewDocument(bson.EC.String("_id", job.ID))
-	update := bson.NewDocument(bson.EC.SubDocumentFromElements("$set", bson.EC.String("status", string(status)), bson.EC.String("info", info)))
+	update := bson.NewDocument(bson.EC.SubDocumentFromElements("$set", bson.EC.String("status", string(status)), bson.EC.String("info", info), bson.EC.Time("update_time", time.Now())))
 	_, err := db.UpdateOne(context.TODO(), filter, update)
 	return err
 }
@@ -215,5 +237,8 @@ func getRetry(c *mongo.Collection, jobID string) (uint8, error) {
 	return result.Retry, nil
 }
 func incremRetry(c *mongo.Collection, jobID string) (err error) {
+	filter := bson.NewDocument(bson.EC.String("_id", jobID))
+	update := bson.NewDocument(bson.EC.SubDocumentFromElements("$inc", bson.EC.Int32("retry", 1)))
+	_, err = c.UpdateOne(context.Background(), filter, update)
 	return
 }

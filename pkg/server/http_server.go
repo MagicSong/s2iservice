@@ -24,11 +24,11 @@ const APIVersion = "/api/v1alpha1"
 
 func (s *HttpServer) GetRouter() rest.App {
 	router, err := rest.MakeRouter(
-		//rest.Get("/jobs", s.Jobs.GetJobsHandler),
+		rest.Get("/jobs", s.Jobs.GetJobsHandler),
 		rest.Post("/jobs", s.Jobs.AddJobHandler),
-		// rest.Get("/jobs/:jid", s.Jobs.GetJobHandler),
+		rest.Get("/jobs/:jid", s.Jobs.GetJobHandler),
+		rest.Post("/jobs/:jid", s.Jobs.UpdateJobHandler),
 		// rest.Get("/jobs/:jid/logs", s.Logs.GetLoggerHandler),
-		// rest.Post("/jobs/:jid", s.Jobs.UpdateJobHandler),
 		// rest.Post("/templates", s.Templates.CreateTemplatesHandler),
 		// rest.Get("/templates", s.Templates.GetAvailableTemplatesHandler),
 	)

@@ -33,6 +33,10 @@ type S2IJob struct {
 	PushPassword string    `json:"push_password" bson:"push_password"`
 }
 
+type RedisJob struct {
+	ID       string `json:"id"`
+	Username string
+}
 type JobStatus string
 
 const (

@@ -3,9 +3,9 @@ package httphandler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/s2iservice/pkg/utils/idutils"
@@ -13,6 +13,7 @@ import (
 	"github.com/adjust/rmq"
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/docker/distribution/reference"
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/s2iservice/pkg/constants"
 	"github.com/s2iservice/pkg/logger"
@@ -85,47 +86,57 @@ func GenerateS2IParameters(req *models.S2IRequest) ([]string, error) {
 	return parameters, nil
 }
 
-// func (s *JobService) UpdateJobHandler(w rest.ResponseWriter, r *rest.Request) {
-// 	req := &models.S2IRequest{}
-// 	username := r.Env["REMOTE_USER"].(string)
-// 	jid, err := strconv.Atoi(r.PathParams["jid"])
-// 	if err != nil {
-// 		rest.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-// 	job, err := s.getJob(jid, username)
-// 	if err != nil {
-// 		rest.Error(w, err.Error(), http.StatusNotFound)
-// 		return
-// 	}
-// 	err = r.DecodeJsonPayload(req)
-// 	if err != nil {
-// 		rest.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-// 	parameters, err := GenerateS2IParameters(req)
-// 	if err != nil {
-// 		rest.Error(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-// 	job.Parameters = parameters
-// 	sql := `UPDATE s2ijob
-// 	SET parameters=?
-// 	WHERE id=? `
-// 	_, err = s.Db.UpdateBySql(sql, strings.Join(parameters, " "), jid, username).Exec()
-// 	if err != nil {
-// 		logger.Error("error: %v", err)
-// 		rest.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.WriteJson(job)
-// }
-func (s *JobService) getJob(jid int, username string) (*models.S2IJob, error) {
+func (s *JobService) UpdateJobHandler(w rest.ResponseWriter, r *rest.Request) {
+	req := &models.S2IRequest{}
+	username := r.Env["REMOTE_USER"].(string)
+	jid := r.PathParams["jid"]
+	job, err := s.getJob(jid, username)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	err = r.DecodeJsonPayload(req)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	parameters, err := GenerateS2IParameters(req)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	job.Parameters = parameters
+	filter := bson.NewDocument(bson.EC.String("_id", jid), bson.EC.String("username", username))
+	values := make([]*bson.Value, 0)
+	for _, item := range parameters {
+		values = append(values, bson.VC.String(item))
+	}
+	update := bson.NewDocument(bson.EC.SubDocumentFromElements("$set", bson.EC.ArrayFromElements("parameters", values...), bson.EC.Time("update_time", time.Now())))
+	result := s.Db.Collection(constants.S2IJobCollectionName).FindOneAndUpdate(context.Background(), filter, update)
+	if result == nil {
+		rest.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	doc := bson.NewDocument()
+	err = result.Decode(doc)
+	if err != nil {
+		logger.Error("error: %v", err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(job)
+}
+func (s *JobService) getJob(jid string, username string) (*models.S2IJob, error) {
 	job := &models.S2IJob{}
+	filter := bson.NewDocument(bson.EC.String("_id", jid), bson.EC.String("username", username))
+	err := s.Db.Collection(constants.S2IJobCollectionName).FindOne(context.Background(), filter).Decode(job)
+	if err != nil {
+		return nil, err
+	}
 	return job, nil
 }
 func (s *JobService) GetJobHandler(w rest.ResponseWriter, r *rest.Request) {
-	jid, _ := strconv.Atoi(r.PathParams["jid"])
+	jid, _ := r.PathParams["jid"]
 	username := r.Env["REMOTE_USER"].(string)
 	job, err := s.getJob(jid, username)
 	if err != nil {
@@ -135,26 +146,31 @@ func (s *JobService) GetJobHandler(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(job)
 }
 
-// func (s *JobService) GetJobsHandler(w rest.ResponseWriter, r *rest.Request) {
-// 	jobs := make([]models.S2IJob, 0)
-// 	username := r.Env["REMOTE_USER"]
-// 	sql := `SELECT id,
-//     username,
-//     status,
-//     create_time,
-//     update_time,
-//     info,
-//     retry
-// 	FROM s2ijob
-// 	WHERE username=?`
-// 	_, err := s.Db.SelectBySql(sql, username).Load(&jobs)
-// 	if err != nil {
-// 		logger.Error("error: %v", err)
-// 		rest.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	w.WriteJson(&jobs)
-// }
+func (s *JobService) GetJobsHandler(w rest.ResponseWriter, r *rest.Request) {
+	username := r.Env["REMOTE_USER"].(string)
+	filter := bson.NewDocument(bson.EC.String("username", username))
+	cur, err := s.Db.Collection(constants.S2IJobCollectionName).Find(context.Background(), filter)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer cur.Close(context.Background())
+	jobs := make([]*models.S2IJob, 0)
+	for cur.Next(context.Background()) {
+		job := new(models.S2IJob)
+		err := cur.Decode(job)
+		if err != nil {
+			rest.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		jobs = append(jobs, job)
+	}
+	if err := cur.Err(); err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(&jobs)
+}
 func (s *JobService) AddJobHandler(w rest.ResponseWriter, r *rest.Request) {
 	req := &models.S2IRequest{}
 	job := &models.S2IJob{}
@@ -185,14 +201,13 @@ func (s *JobService) AddJobHandler(w rest.ResponseWriter, r *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	jobBytes, err := json.Marshal(job)
-	if err != nil {
-		logger.Error("error: %v", err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
-	if ok := s.Queue.PublishBytes(jobBytes); !ok {
+	redisJob := &models.RedisJob{
+		ID:       job.ID,
+		Username: job.Username,
+	}
+	err = PublishJob(redisJob, s.Queue)
+	if err != nil {
 		logger.Error("error: %v", err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -200,23 +215,26 @@ func (s *JobService) AddJobHandler(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(job)
 }
 
-// func (s *JobService) RunJobHandler(w rest.ResponseWriter, r *rest.Request) {
-// 	jid, err := strconv.Atoi(r.PathParams["jid"])
-// 	if err != nil {
-// 		rest.Error(w, "The format of job id is illegal", http.StatusBadRequest)
-// 		return
-// 	}
-// 	username := r.Env["REMOTE_USER"]
-// 	sql := `SELECT *
-// 	FROM s2ijob
-// 	WHERE id=?
-// 	AND
-// 	username=?`
-// 	job := &models.S2IJob{}
-// 	err = s.Db.SelectBySql(sql, jid, username).LoadOne(job)
-// 	if err != nil {
-// 		rest.Error(w, err.Error(), http.StatusNotFound)
-// 		return
-// 	}
-
-// }
+func PublishJob(job *models.RedisJob, q rmq.Queue) error {
+	jobBytes, err := json.Marshal(job)
+	if err != nil {
+		return err
+	}
+	if ok := q.PublishBytes(jobBytes); !ok {
+		return fmt.Errorf("Failed to publish job")
+	}
+	return nil
+}
+func (s *JobService) RunJobHandler(w rest.ResponseWriter, r *rest.Request) {
+	job := &models.RedisJob{
+		ID:       r.PathParams["jid"],
+		Username: r.Env["REMOTE_USER"].(string),
+	}
+	err := PublishJob(job, s.Queue)
+	if err != nil {
+		logger.Error("error: %v", err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusAccepted)
+}
