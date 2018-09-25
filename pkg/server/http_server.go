@@ -16,7 +16,7 @@ type HttpServer struct {
 	Connection rmq.Connection
 	Queue      rmq.Queue
 	Jobs       *httphandler.JobService
-	// Logs       *httphandler.LogService
+	Logs       *httphandler.LogService
 	// Templates  *httphandler.TemplateService
 }
 
@@ -29,7 +29,7 @@ func (s *HttpServer) GetRouter() rest.App {
 		rest.Get("/jobs/:jid", s.Jobs.GetJobHandler),
 		rest.Post("/jobs/:jid", s.Jobs.UpdateJobHandler),
 		rest.Post("/jobs/:jid/run", s.Jobs.RunJobHandler),
-		// rest.Get("/jobs/:jid/logs", s.Logs.GetLoggerHandler),
+		rest.Get("/jobs/:jid/logs", s.Logs.GetLoggerHandler),
 		// rest.Post("/templates", s.Templates.CreateTemplatesHandler),
 		// rest.Get("/templates", s.Templates.GetAvailableTemplatesHandler),
 	)
@@ -45,7 +45,7 @@ func (s *HttpServer) Serve(r *Resources) {
 	s.Queue = r.Redis
 	s.Connection = r.Connection
 	s.Jobs = httphandler.NewJobService(r.Db, r.Redis)
-	// s.Logs = httphandler.NewLogService(r.Db)
+	s.Logs = httphandler.NewLogService(r.Db)
 	// s.Templates = httphandler.NewTemplateService(r.Db)
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
