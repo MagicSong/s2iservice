@@ -28,6 +28,7 @@ func (s *HttpServer) GetRouter() rest.App {
 		rest.Post("/jobs", s.Jobs.AddJobHandler),
 		rest.Get("/jobs/:jid", s.Jobs.GetJobHandler),
 		rest.Post("/jobs/:jid", s.Jobs.UpdateJobHandler),
+		rest.Post("/jobs/:jid/run", s.Jobs.RunJobHandler),
 		// rest.Get("/jobs/:jid/logs", s.Logs.GetLoggerHandler),
 		// rest.Post("/templates", s.Templates.CreateTemplatesHandler),
 		// rest.Get("/templates", s.Templates.GetAvailableTemplatesHandler),

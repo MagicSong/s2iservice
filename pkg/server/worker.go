@@ -23,10 +23,10 @@ import (
 )
 
 const (
-	MaxCount      = 2
+	MaxCount      = 4
 	CMD           = "s2i"
 	MaxRetry      = 2
-	CleanInterval = 5
+	CleanInterval = 2
 )
 
 type Worker struct {
@@ -55,8 +55,6 @@ func (w *Worker) Work(r *Resources) {
 		})
 		connection := rmq.OpenConnectionWithRedisClient(r.cfg.Redis.RMQName, client)
 		cleaner := rmq.NewCleaner(connection)
-		logger.Info("Begin to clean Queue")
-		cleaner.Clean()
 		for range time.Tick(CleanInterval * time.Minute) {
 			logger.Info("Begin to clean Queue")
 			cleaner.Clean()
