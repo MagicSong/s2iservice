@@ -75,15 +75,19 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/openshift/source-to-image"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/sony/sonyflake"
 
 [[constraint]]
   name = "github.com/speps/go-hashids"
   version = "2.0.0"
+
+[[constraint]]
+  name = "github.com/spf13/cobra"
+  version = "0.0.3"
+
+[[constraint]]
+  name = "github.com/spf13/pflag"
+  version = "1.0.2"
 
 [[constraint]]
   name = "github.com/stretchr/testify"

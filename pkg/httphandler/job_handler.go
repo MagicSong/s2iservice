@@ -5,19 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
-
-	"github.com/s2iservice/pkg/utils/idutils"
 
 	"github.com/adjust/rmq"
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/docker/distribution/reference"
+	"github.com/golang/glog"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/bsoncodec"
 	"github.com/mongodb/mongo-go-driver/mongo"
+
+	"github.com/s2iservice/pkg/api"
 	"github.com/s2iservice/pkg/constants"
-	"github.com/s2iservice/pkg/logger"
-	"github.com/s2iservice/pkg/models"
+	"github.com/s2iservice/pkg/utils/idutils"
 )
 
 type JobService struct {
@@ -31,103 +30,9 @@ func NewJobService(db *mongo.Database, q rmq.Queue) *JobService {
 		Queue: q,
 	}
 }
-func GenerateS2IParameters(req *models.S2IRequest) ([]string, error) {
-	parameters := make([]string, 4)
-	if req.Custom != "" {
-		parameters[0] = req.Custom
-		parameters[1] = "2>&1"
-		return parameters, nil
-	}
-	parameters[0] = "build"
-	_, err := url.Parse(req.SourceURL)
-	if err != nil {
-		return nil, ErrInvalidGitURL
-	}
-	parameters[1] = req.SourceURL
-	if _, err := reference.ParseNamed(req.BuilderImage); err != nil {
-		return nil, ErrInvaildImageName
-	}
-	parameters[2] = req.BuilderImage
-	if _, err := reference.ParseNamed(req.Tag); err != nil {
-		return nil, ErrInvaildImageName
-	}
-	parameters[3] = req.Tag
-	if req.CallbackURL != "" {
-		_, err := url.Parse(req.CallbackURL)
-		if err != nil {
-			return nil, ErrInvalidCallbackURL
-		}
-		parameters = append(parameters, "--callback-url "+req.CallbackURL)
-	}
-	if req.ContextDir != "" {
-		parameters = append(parameters, "--context-dir "+req.ContextDir)
-	}
-	if req.AddHost != "" {
-		parameters = append(parameters, "--add-host "+req.AddHost)
-	}
-	if req.RuntimeImage != "" {
-		if _, err := reference.ParseNamed(req.RuntimeImage); err != nil {
-			return nil, ErrInvaildImageName
-		}
-		parameters = append(parameters, "--runtime-image "+req.RuntimeImage)
-		if req.RuntimeArtifact == "" {
-			return nil, ErrLackOfRuntimeOption
-		}
-		parameters = append(parameters, "--runtime-artifact "+req.RuntimeArtifact)
-	}
-	if req.EnvironmentVariables != "" {
-		parameters = append(parameters, "-e "+req.EnvironmentVariables)
-	}
-	if req.ReuseMavenLocalRepo {
-		parameters = append(parameters, "-v")
-		parameters = append(parameters, "/tmp/.m2:/opt/app-root/src/.m2")
-	}
-	parameters = append(parameters, "2>&1") //所有信息都重定向到stdout
-	return parameters, nil
-}
 
-func (s *JobService) UpdateJobHandler(w rest.ResponseWriter, r *rest.Request) {
-	req := &models.S2IRequest{}
-	username := r.Env["REMOTE_USER"].(string)
-	jid := r.PathParams["jid"]
-	job, err := s.getJob(jid, username)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-	err = r.DecodeJsonPayload(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	parameters, err := GenerateS2IParameters(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	job.Parameters = parameters
-	filter := bson.NewDocument(bson.EC.String("_id", jid), bson.EC.String("username", username))
-	values := make([]*bson.Value, 0)
-	for _, item := range parameters {
-		values = append(values, bson.VC.String(item))
-	}
-	update := bson.NewDocument(bson.EC.SubDocumentFromElements("$set", bson.EC.ArrayFromElements("parameters", values...), bson.EC.Time("update_time", time.Now())))
-	result := s.Db.Collection(constants.S2IJobCollectionName).FindOneAndUpdate(context.Background(), filter, update)
-	if result == nil {
-		rest.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	doc := bson.NewDocument()
-	err = result.Decode(doc)
-	if err != nil {
-		logger.Error("error: %v", err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.WriteJson(job)
-}
-func (s *JobService) getJob(jid string, username string) (*models.S2IJob, error) {
-	job := &models.S2IJob{}
+func (s *JobService) getJob(jid string, username string) (*api.S2IJob, error) {
+	job := &api.S2IJob{}
 	filter := bson.NewDocument(bson.EC.String("_id", jid), bson.EC.String("username", username))
 	err := s.Db.Collection(constants.S2IJobCollectionName).FindOne(context.Background(), filter).Decode(job)
 	if err != nil {
@@ -135,11 +40,13 @@ func (s *JobService) getJob(jid string, username string) (*models.S2IJob, error)
 	}
 	return job, nil
 }
+
 func (s *JobService) GetJobHandler(w rest.ResponseWriter, r *rest.Request) {
 	jid, _ := r.PathParams["jid"]
 	username := r.Env["REMOTE_USER"].(string)
 	job, err := s.getJob(jid, username)
 	if err != nil {
+		glog.Errorf("%s", err.Error())
 		rest.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
@@ -155,86 +62,169 @@ func (s *JobService) GetJobsHandler(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 	defer cur.Close(context.Background())
-	jobs := make([]*models.S2IJob, 0)
+	jobs := make([]*api.S2IJob, 0)
 	for cur.Next(context.Background()) {
-		job := new(models.S2IJob)
+		job := new(api.S2IJob)
 		err := cur.Decode(job)
 		if err != nil {
+			glog.Errorf("%s", err.Error())
 			rest.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		jobs = append(jobs, job)
 	}
 	if err := cur.Err(); err != nil {
+		glog.Errorf("%s", err.Error())
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteJson(&jobs)
 }
 func (s *JobService) AddJobHandler(w rest.ResponseWriter, r *rest.Request) {
-	req := &models.S2IRequest{}
-	job := &models.S2IJob{}
+	job := &api.S2IJob{}
+	req := &api.Config{}
 	job.Username = r.Env["REMOTE_USER"].(string)
 	err := r.DecodeJsonPayload(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	parameters, err := GenerateS2IParameters(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	job.Parameters = parameters
-	job.ImageName = req.Tag
+	job.Config = req
 	job.CreateTime = time.Now()
 	job.UpdateTime = time.Now()
-	if req.Export {
-		job.Export = true
-		job.PushUsername = req.PushUsername
-		job.PushPassword = req.PushPassword
-	}
 	job.ID = idutils.GetUuid(constants.S2IJobIDPrefix)
 	_, err = s.Db.Collection(constants.S2IJobCollectionName).InsertOne(context.Background(), job)
 	if err != nil {
-		logger.Error("error: %v", err)
+		glog.Errorf("%s", err.Error())
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	redisJob := &models.RedisJob{
-		ID:       job.ID,
-		Username: job.Username,
-	}
-	err = PublishJob(redisJob, s.Queue)
+	err = s.PublishJob(job.ID, job.Username)
 	if err != nil {
-		logger.Error("error: %v", err)
+		glog.Errorf("%s", err.Error())
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteJson(job)
 }
 
-func PublishJob(job *models.RedisJob, q rmq.Queue) error {
+func (s *JobService) UpdateJobHandler(w rest.ResponseWriter, r *rest.Request) {
+	req := &api.Config{}
+	username := r.Env["REMOTE_USER"].(string)
+	jid := r.PathParams["jid"]
+	job, err := s.getJob(jid, username)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	err = r.DecodeJsonPayload(req)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	job.Config = req
+	filter := bson.NewDocument(bson.EC.String("_id", jid), bson.EC.String("username", username))
+	update := bson.NewDocument(bson.EC.SubDocumentFromElements("$set", bsoncodec.ConstructElement("Config", job), bson.EC.Time("update_time", time.Now())))
+	result := s.Db.Collection(constants.S2IJobCollectionName).FindOneAndUpdate(context.Background(), filter, update)
+	if result == nil {
+		rest.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	doc := bson.NewDocument()
+	err = result.Decode(doc)
+	if err != nil {
+		glog.Errorf("%s", err.Error())
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(job)
+}
+
+func (s *JobService) PublishJob(jobid, username string) error {
+	runID := idutils.GetUuid("run-")
+	run := &api.S2IRun{
+		JobID:     jobid,
+		RunID:     runID,
+		StartTime: time.Now(),
+		Status:    api.Created,
+	}
+	_, err := s.Db.Collection(constants.S2IRunCollectionName).InsertOne(context.Background(), run)
+	if err != nil {
+		return err
+	}
+	job := &api.RedisJob{
+		Username: username,
+		RunID:    runID,
+		JobID:    jobid,
+	}
+
 	jobBytes, err := json.Marshal(job)
 	if err != nil {
 		return err
 	}
-	if ok := q.PublishBytes(jobBytes); !ok {
+	if ok := s.Queue.PublishBytes(jobBytes); !ok {
 		return fmt.Errorf("Failed to publish job")
 	}
 	return nil
 }
 func (s *JobService) RunJobHandler(w rest.ResponseWriter, r *rest.Request) {
-	job := &models.RedisJob{
-		ID:       r.PathParams["jid"],
-		Username: r.Env["REMOTE_USER"].(string),
-	}
-	err := PublishJob(job, s.Queue)
+	jobid := r.PathParams["jid"]
+	username := r.Env["REMOTE_USER"].(string)
+	_, err := s.getJob(jobid, username)
 	if err != nil {
-		logger.Error("error: %v", err)
+		glog.Errorf("%s", err.Error())
+		rest.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	err = s.PublishJob(jobid, username)
+	if err != nil {
+		glog.Errorf("%s", err.Error())
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusAccepted)
+}
+
+func (s *JobService) GetRunHandler(w rest.ResponseWriter, r *rest.Request) {
+	jobid := r.PathParams["jid"]
+	runid := r.PathParams["runid"]
+	username := r.Env["REMOTE_USER"].(string)
+	filter := bson.NewDocument(bson.EC.String("_id", runid), bson.EC.String("username", username), bson.EC.String("job_id", jobid))
+	result := &api.S2IRun{}
+	err := s.Db.Collection(constants.S2IRunCollectionName).FindOne(context.Background(), filter).Decode(result)
+	if err != nil {
+		glog.Errorf("%s", err.Error())
+		rest.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	w.WriteJson(result)
+}
+func (s *JobService) GetRunsHandler(w rest.ResponseWriter, r *rest.Request) {
+	jobid := r.PathParams["jid"]
+	username := r.Env["REMOTE_USER"].(string)
+	filter := bson.NewDocument(bson.EC.String("username", username), bson.EC.String("job_id", jobid))
+	cur, err := s.Db.Collection(constants.S2IRunCollectionName).Find(context.Background(), filter)
+	if err != nil {
+		glog.Errorf("%s", err.Error())
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer cur.Close(context.Background())
+	runs := make([]*api.S2IRun, 0)
+	for cur.Next(context.Background()) {
+		run := new(api.S2IRun)
+		err := cur.Decode(run)
+		if err != nil {
+			glog.Errorf("%s", err.Error())
+			rest.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		runs = append(runs, run)
+	}
+	if err := cur.Err(); err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(&runs)
 }

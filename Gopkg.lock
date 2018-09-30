@@ -188,6 +188,12 @@
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
 
 [[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/koding/multiconfig"
   packages = ["."]
@@ -265,41 +271,6 @@
   version = "v0.1.1"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/openshift/source-to-image"
-  packages = [
-    "pkg/api",
-    "pkg/api/constants",
-    "pkg/build",
-    "pkg/build/strategies/dockerfile",
-    "pkg/build/strategies/layered",
-    "pkg/build/strategies/onbuild",
-    "pkg/build/strategies/sti",
-    "pkg/docker",
-    "pkg/errors",
-    "pkg/ignore",
-    "pkg/scm",
-    "pkg/scm/downloaders/empty",
-    "pkg/scm/downloaders/file",
-    "pkg/scm/downloaders/git",
-    "pkg/scm/git",
-    "pkg/scripts",
-    "pkg/tar",
-    "pkg/test",
-    "pkg/test/cmd",
-    "pkg/test/fs",
-    "pkg/util",
-    "pkg/util/cmd",
-    "pkg/util/cygpath",
-    "pkg/util/fs",
-    "pkg/util/glog",
-    "pkg/util/interrupt",
-    "pkg/util/status",
-    "pkg/util/user"
-  ]
-  revision = "402b6f8302ae9a5c35643d939b607c715136ea36"
-
-[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -322,6 +293,18 @@
   packages = ["."]
   revision = "ad304c6ede07ca1f915c30a5510c45860aa165a7"
   version = "v2.0.0"
+
+[[projects]]
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
+  version = "v0.0.3"
+
+[[projects]]
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  revision = "9a97c102cda95a86cec2345a6f09f55a939babf5"
+  version = "v1.0.2"
 
 [[projects]]
   name = "github.com/stretchr/testify"
@@ -416,6 +399,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "be6e6c07903e3dcd2899b852f8c321704cf3c8154151e05f219d35ed693879dc"
+  inputs-digest = "aa2b67f830541a43974921085bb958800c3db4f0e776b09393e18d08c97e2700"
   solver-name = "gps-cdcl"
   solver-version = 1

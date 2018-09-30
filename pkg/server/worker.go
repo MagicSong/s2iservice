@@ -99,7 +99,7 @@ func (s *S2IConsumer) Consume(delivery rmq.Delivery) {
 	coll := s.worker.Db.Collection(constants.S2IJobCollectionName)
 	var redisJob models.RedisJob
 	if err := json.Unmarshal([]byte(delivery.Payload()), &redisJob); err != nil {
-		logger.Error("Error: %v", err)
+		glog.Errorf("%s", err.Error())
 		delivery.Reject()
 		return
 	}
@@ -129,7 +129,7 @@ func (s *S2IConsumer) Consume(delivery rmq.Delivery) {
 		updateJobStatusAndInfo(coll, s.job, models.Error, e.Error())
 		err = incremRetry(coll, s.job.ID)
 		if err != nil {
-			logger.Error("error: %v", err)
+			glog.Errorf("%s", err.Error())
 		}
 		delivery.Reject()
 	}
