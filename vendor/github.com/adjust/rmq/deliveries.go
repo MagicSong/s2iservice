@@ -21,13 +21,3 @@ func (deliveries Deliveries) Reject() int {
 	}
 	return failedCount
 }
-
-func (deliveries Deliveries) Push() int {
-	failedCount := 0
-	for _, delivery := range deliveries {
-		if !delivery.Push() {
-			failedCount++
-		}
-	}
-	return failedCount
-}

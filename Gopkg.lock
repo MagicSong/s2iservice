@@ -2,10 +2,19 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/Azure/go-ansiterm"
+  packages = [
+    ".",
+    "winterm"
+  ]
+  revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
+
+[[projects]]
   name = "github.com/BurntSushi/toml"
   packages = ["."]
-  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
-  version = "v0.3.0"
+  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
+  version = "v0.3.1"
 
 [[projects]]
   name = "github.com/Microsoft/go-winio"
@@ -15,9 +24,21 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nvveen/Gotty"
+  packages = ["."]
+  revision = "cd527374f1e5bff4938207604a14f2e38a9cf512"
+
+[[projects]]
+  name = "github.com/Sirupsen/logrus"
+  packages = ["."]
+  revision = "a67f783a3814b8729bd2dac5780b5f78f8dbd64d"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/adjust/rmq"
   packages = ["."]
-  revision = "150bed51c75ffda9ee0665b68a883a2bdcc137f5"
+  revision = "99798ba09475383696d53071bd9885ac41694a7b"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -64,25 +85,40 @@
 [[projects]]
   name = "github.com/docker/docker"
   packages = [
+    "api",
     "api/types",
     "api/types/blkiodev",
     "api/types/container",
     "api/types/events",
     "api/types/filters",
+    "api/types/image",
     "api/types/mount",
     "api/types/network",
-    "api/types/reference",
     "api/types/registry",
     "api/types/strslice",
     "api/types/swarm",
     "api/types/time",
     "api/types/versions",
     "api/types/volume",
+    "builder/dockerfile/command",
+    "builder/dockerfile/parser",
+    "cli/config",
+    "cli/config/configfile",
     "client",
+    "pkg/homedir",
+    "pkg/idtools",
+    "pkg/ioutils",
+    "pkg/jsonlog",
+    "pkg/jsonmessage",
+    "pkg/longpath",
+    "pkg/stdcopy",
+    "pkg/system",
+    "pkg/term",
+    "pkg/term/windows",
     "pkg/tlsconfig"
   ]
-  revision = "092cba3727bb9b4a2f0e922cd6c0f93ea270e363"
-  version = "v1.13.1"
+  revision = "90d35abf7b3535c1c319c872900fbd76374e521c"
+  version = "v17.05.0-ce-rc3"
 
 [[projects]]
   name = "github.com/docker/go-connections"
@@ -101,16 +137,16 @@
   version = "v0.3.3"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/docker/libtrust"
+  packages = ["."]
+  revision = "aabc10ec26b754e797f9028f4589c5b7bd90dc20"
+
+[[projects]]
   name = "github.com/fatih/camelcase"
   packages = ["."]
   revision = "44e46d280b43ec1531bb25252440e34f1b800b65"
   version = "v1.0.0"
-
-[[projects]]
-  name = "github.com/fatih/color"
-  packages = ["."]
-  revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
-  version = "v1.7.0"
 
 [[projects]]
   name = "github.com/fatih/structs"
@@ -141,6 +177,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/golang/glog"
+  packages = ["."]
+  revision = "23def4e6c14b4da8ac2ed8007337bc5eb5007998"
+
+[[projects]]
+  branch = "master"
   name = "github.com/golang/snappy"
   packages = ["."]
   revision = "2e65f85255dbc3072edf28d6b5b8efc472979f5a"
@@ -152,24 +194,20 @@
   revision = "69c27309b2d751c576b59ea9c3726597c2375da3"
 
 [[projects]]
-  name = "github.com/mattn/go-colorable"
+  branch = "master"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
-  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
-  version = "v0.0.9"
-
-[[projects]]
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
-  version = "v0.0.4"
+  revision = "b729f2633dfe35f4d1d8a32385f6685610ce1cb5"
 
 [[projects]]
   name = "github.com/mongodb/mongo-go-driver"
   packages = [
     "bson",
+    "bson/bsoncodec",
     "bson/builder",
     "bson/decimal",
     "bson/elements",
+    "bson/internal/llbson",
     "bson/objectid",
     "bson/parser",
     "bson/parser/ast",
@@ -217,8 +255,49 @@
     "mongo/transactionopt",
     "mongo/updateopt"
   ]
-  revision = "b75c1ad5f277465dc7bdcc3d14c5177a89b6a4f9"
-  version = "v0.0.13"
+  revision = "71de844febff6ac5b6fc6ba165e24e9677d2ee05"
+  version = "v0.0.15"
+
+[[projects]]
+  name = "github.com/opencontainers/runc"
+  packages = ["libcontainer/user"]
+  revision = "baf6536d6259209c3edfa2b22237af82942d3dfa"
+  version = "v0.1.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/openshift/source-to-image"
+  packages = [
+    "pkg/api",
+    "pkg/api/constants",
+    "pkg/build",
+    "pkg/build/strategies/dockerfile",
+    "pkg/build/strategies/layered",
+    "pkg/build/strategies/onbuild",
+    "pkg/build/strategies/sti",
+    "pkg/docker",
+    "pkg/errors",
+    "pkg/ignore",
+    "pkg/scm",
+    "pkg/scm/downloaders/empty",
+    "pkg/scm/downloaders/file",
+    "pkg/scm/downloaders/git",
+    "pkg/scm/git",
+    "pkg/scripts",
+    "pkg/tar",
+    "pkg/test",
+    "pkg/test/cmd",
+    "pkg/test/fs",
+    "pkg/util",
+    "pkg/util/cmd",
+    "pkg/util/cygpath",
+    "pkg/util/fs",
+    "pkg/util/glog",
+    "pkg/util/interrupt",
+    "pkg/util/status",
+    "pkg/util/user"
+  ]
+  revision = "402b6f8302ae9a5c35643d939b607c715136ea36"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -265,8 +344,11 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["pbkdf2"]
-  revision = "0e37d006457bf46f9e6692014ba72ef82c33022c"
+  packages = [
+    "pbkdf2",
+    "ssh/terminal"
+  ]
+  revision = "5295e8364332db77d75fce11f1d19c053919a9c9"
 
 [[projects]]
   branch = "master"
@@ -277,7 +359,7 @@
     "internal/socks",
     "proxy"
   ]
-  revision = "26e67e76b6c3f6ce91f7c52def5af501b4e0f3a2"
+  revision = "4dfa2610cdf3b287375bbba5b8f2a14d3b01d8de"
 
 [[projects]]
   branch = "master"
@@ -292,7 +374,7 @@
     "unix",
     "windows"
   ]
-  revision = "d0be0721c37eeb5299f245a996a483160fc36940"
+  revision = "e4b3c5e9061176387e7cea65e4dc5853801f3fb7"
 
 [[projects]]
   name = "golang.org/x/text"
@@ -308,6 +390,24 @@
   version = "v0.3.0"
 
 [[projects]]
+  branch = "v1"
+  name = "gopkg.in/bsm/ratelimit.v1"
+  packages = ["."]
+  revision = "db14e161995a5177acef654cb0dd785e8ee8bc22"
+
+[[projects]]
+  name = "gopkg.in/redis.v3"
+  packages = [
+    ".",
+    "internal",
+    "internal/consistenthash",
+    "internal/hashtag",
+    "internal/pool"
+  ]
+  revision = "b5e368500d0a508ef8f16e9c2d4025a8a46bcc29"
+  version = "v3.6.4"
+
+[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
@@ -316,6 +416,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0a969af30362f9d4a93b4d8cc4068152f82ed649135315ffed5951f60fd7b08d"
+  inputs-digest = "be6e6c07903e3dcd2899b852f8c321704cf3c8154151e05f219d35ed693879dc"
   solver-name = "gps-cdcl"
   solver-version = 1

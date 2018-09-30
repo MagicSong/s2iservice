@@ -1,23 +1,25 @@
 package rmq
 
-import (
-	"fmt"
-	"sync"
-)
+import "fmt"
 
 type TestConnection struct {
-	queues *sync.Map
+	queues map[string]*TestQueue
 }
 
 func NewTestConnection() TestConnection {
 	return TestConnection{
-		queues: &sync.Map{},
+		queues: map[string]*TestQueue{},
 	}
 }
 
 func (connection TestConnection) OpenQueue(name string) Queue {
-	queue, _ := connection.queues.LoadOrStore(name, NewTestQueue(name))
-	return queue.(*TestQueue)
+	if queue, ok := connection.queues[name]; ok {
+		return queue
+	}
+
+	queue := NewTestQueue(name)
+	connection.queues[name] = queue
+	return queue
 }
 
 func (connection TestConnection) CollectStats(queueList []string) Stats {
@@ -25,28 +27,27 @@ func (connection TestConnection) CollectStats(queueList []string) Stats {
 }
 
 func (connection TestConnection) GetDeliveries(queueName string) []string {
-	queue, ok := connection.queues.Load(queueName)
+	queue, ok := connection.queues[queueName]
 	if !ok {
 		return []string{}
 	}
 
-	return queue.(*TestQueue).LastDeliveries
+	return queue.LastDeliveries
 }
 
 func (connection TestConnection) GetDelivery(queueName string, index int) string {
-	queue, ok := connection.queues.Load(queueName)
-	if !ok || index < 0 || index >= len(queue.(*TestQueue).LastDeliveries) {
+	queue, ok := connection.queues[queueName]
+	if !ok || index < 0 || index >= len(queue.LastDeliveries) {
 		return fmt.Sprintf("rmq.TestConnection: delivery not found: %s[%d]", queueName, index)
 	}
 
-	return queue.(*TestQueue).LastDeliveries[index]
+	return queue.LastDeliveries[index]
 }
 
 func (connection TestConnection) Reset() {
-	connection.queues.Range(func(_, v interface{}) bool {
-		v.(*TestQueue).Reset()
-		return true
-	})
+	for _, queue := range connection.queues {
+		queue.Reset()
+	}
 }
 
 func (connection TestConnection) GetOpenQueues() []string {

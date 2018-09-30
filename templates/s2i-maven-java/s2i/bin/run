@@ -4,7 +4,7 @@
 # The run script executes the server that runs your application.
 #
 # For more information see the documentation:
-#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+#	https://github.com/s2iservice/blob/master/docs/builder_image.md
 #
 
 exec java $JAVA_PARAMS -jar /opt/app-root/app.jar
