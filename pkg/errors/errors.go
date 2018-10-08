@@ -26,6 +26,7 @@ const (
 	SourcePathError
 	UserNotAllowedError
 	EmptyGitRepositoryError
+	PushImageError
 )
 
 // Error represents an error thrown during S2I execution
@@ -75,6 +76,16 @@ func NewPullImageError(name string, err error) error {
 		Details:    err,
 		ErrorCode:  PullImageError,
 		Suggestion: fmt.Sprintf("check image name, or if using a local image set the builder image pull policy to %q", "never"),
+	}
+}
+
+// NewPushImageError returns a new error which indicates there was a problem pushing image
+func NewPushImageError(name string, err error) error {
+	return Error{
+		Message:    fmt.Sprintf("unable to push %s", name),
+		Details:    err,
+		ErrorCode:  PushImageError,
+		Suggestion: fmt.Sprintf("check image name, or check if username and password provided are corrected"),
 	}
 }
 

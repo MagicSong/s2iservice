@@ -512,10 +512,9 @@ const (
 
 type LogRow struct {
 	Seq     int
-	JobID   string    `bson:"builder_id"`
+	RunID   string    `bson:"builder_id"`
 	Text    string    `bson:"log"`
 	LogTime time.Time `bson:"create_time"`
-	RetryID uint8     `bson:"retry_id"`
 }
 
 type FieldInfo struct {

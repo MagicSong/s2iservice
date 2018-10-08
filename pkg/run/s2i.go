@@ -74,16 +74,6 @@ func RunS2I(cfg *api.Config) {
 			}
 		}
 	}
-
-	if len(oldScriptsFlag) != 0 {
-		glog.Warning("DEPRECATED: Flag --scripts is deprecated, use --scripts-url instead")
-		cfg.ScriptsURL = oldScriptsFlag
-	}
-	if len(oldDestination) != 0 {
-		glog.Warning("DEPRECATED: Flag --location is deprecated, use --destination instead")
-		cfg.Destination = oldDestination
-	}
-
 	if networkMode != "" {
 		cfg.DockerNetworkMode = api.DockerNetworkMode(networkMode)
 	}

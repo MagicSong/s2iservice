@@ -6,4 +6,5 @@ const (
 	S2ILogCollectionName      = "S2ILOG"
 	S2ITemplateCollectionName = "S2ITemplate"
 	S2IRunCollectionName      = "S2IRUN"
+	S2IRunIDPrefix            = "s2irun-"
 )

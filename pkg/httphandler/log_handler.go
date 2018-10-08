@@ -48,7 +48,7 @@ func (l *LogService) GetLoggerHandler(w rest.ResponseWriter, r *rest.Request) {
 	if s != "" {
 		startTime, err = time.Parse(time.RFC3339, s)
 		if err != nil {
-			rest.Error(w, "start_time格式不正确", http.StatusBadRequest)
+			rest.Error(w, "Format of <start_time> is illegal ", http.StatusBadRequest)
 			return
 		} else {
 			res, err := getLogByTime(coll, runid, startTime)
@@ -64,7 +64,7 @@ func (l *LogService) GetLoggerHandler(w rest.ResponseWriter, r *rest.Request) {
 	if s != "" {
 		fromID, err = strconv.Atoi(s)
 		if err != nil {
-			rest.Error(w, "from_id不是合法的数字", http.StatusBadRequest)
+			rest.Error(w, "<from_id> is not a number", http.StatusBadRequest)
 			return
 		}
 	}

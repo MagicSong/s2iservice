@@ -43,7 +43,7 @@ const (
 
 	// DefaultDockerTimeout specifies a timeout for Docker API calls. When this
 	// timeout is reached, certain Docker API calls might error out.
-	DefaultDockerTimeout = 2 * time.Minute
+	DefaultDockerTimeout = 4 * time.Minute
 
 	// DefaultShmSize is the default shared memory size to use (in bytes) if not specified.
 	DefaultShmSize = int64(1024 * 1024 * 64)
@@ -51,6 +51,7 @@ const (
 	DefaultPullRetryDelay = 5 * time.Second
 	// DefaultPullRetryCount is the default pull image retry times
 	DefaultPullRetryCount = 6
+	DefaultPushRetryCount = 2
 )
 
 var (
@@ -100,6 +101,7 @@ type Docker interface {
 	RemoveImage(name string) error
 	CheckImage(name string) (*api.Image, error)
 	PullImage(name string) (*api.Image, error)
+	PushImage(name string) error
 	CheckAndPullImage(name string) (*api.Image, error)
 	BuildImage(opts BuildImageOptions) error
 	GetImageUser(name string) (string, error)
@@ -127,6 +129,7 @@ type Client interface {
 	ImageBuild(ctx context.Context, buildContext io.Reader, options dockertypes.ImageBuildOptions) (dockertypes.ImageBuildResponse, error)
 	ImageInspectWithRaw(ctx context.Context, image string) (dockertypes.ImageInspect, []byte, error)
 	ImagePull(ctx context.Context, ref string, options dockertypes.ImagePullOptions) (io.ReadCloser, error)
+	ImagePush(ctx context.Context, ref string, options dockertypes.ImagePushOptions) (io.ReadCloser, error)
 	ImageRemove(ctx context.Context, image string, options dockertypes.ImageRemoveOptions) ([]dockertypes.ImageDeleteResponseItem, error)
 	ServerVersion(ctx context.Context) (dockertypes.Version, error)
 }
@@ -600,6 +603,66 @@ func updateImageWithInspect(image *api.Image, inspect *dockertypes.ImageInspect)
 			Env:    inspect.ContainerConfig.Env,
 		}
 	}
+}
+
+func (d *stiDocker) PushImage(name string) error {
+	name = getImageName(name)
+	base64Auth, err := base64EncodeAuth(d.pushAuth)
+	if err != nil {
+		return nil, s2ierr.NewPushImageError(name, err)
+	}
+	for retries := 0; retries <= DefaultPushRetryCount; retries++ {
+		err = utils.TimeoutAfter(DefaultDockerTimeout, fmt.Sprintf("pushing image %q", name), func(timer *time.Timer) error {
+			resp, pushErr := d.client.ImagePush(context.Background(), name, dockertypes.ImagePushOptions{RegistryAuth: base64Auth})
+			if pullErr != nil {
+				return pullErr
+			}
+			defer resp.Close()
+
+			decoder := json.NewDecoder(resp)
+			for {
+				if !timer.Stop() {
+					return &utils.TimeoutError{}
+				}
+				timer.Reset(DefaultDockerTimeout)
+
+				var msg dockermessage.JSONMessage
+				pullErr = decoder.Decode(&msg)
+				if pullErr == io.EOF {
+					return nil
+				}
+				if pullErr != nil {
+					return pullErr
+				}
+
+				if msg.Error != nil {
+					return msg.Error
+				}
+				if msg.Progress != nil {
+					glog.V(4).Infof("pushing image %s: %s", name, msg.Progress.String())
+				}
+			}
+		})
+		if err == nil {
+			break
+		}
+		glog.V(0).Infof("pushing image error : %v", err)
+		errMsg := fmt.Sprintf("%s", err)
+		for _, errorString := range RetriableErrors {
+			if strings.Contains(errMsg, errorString) {
+				retriableError = true
+				break
+			}
+		}
+
+		if !retriableError {
+			return s2ierr.NewPushImageError(name, err)
+		}
+
+		glog.V(0).Infof("retrying in %s ...", DefaultPullRetryDelay)
+		time.Sleep(DefaultPullRetryDelay)
+	}
+	return nil
 }
 
 // RemoveContainer removes a container and its associated volumes.

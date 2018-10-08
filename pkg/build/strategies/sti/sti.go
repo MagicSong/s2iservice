@@ -199,6 +199,11 @@ func (builder *STI) Build(config *api.Config) (*api.Result, error) {
 			)
 		}()
 	}
+	if builder.config.Export {
+		defer func() {
+			builder.docker.PushImage(builder.config.Tag)
+		}()
+	}
 	defer builder.garbage.Cleanup(config)
 
 	glog.V(1).Infof("Preparing to build %s", config.Tag)

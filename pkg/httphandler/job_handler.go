@@ -142,7 +142,7 @@ func (s *JobService) UpdateJobHandler(w rest.ResponseWriter, r *rest.Request) {
 }
 
 func (s *JobService) PublishJob(jobid, username string) error {
-	runID := idutils.GetUuid("run-")
+	runID := idutils.GetUuid(constants.S2IRunIDPrefix)
 	run := &api.S2IRun{
 		JobID:     jobid,
 		RunID:     runID,
