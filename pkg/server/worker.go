@@ -16,10 +16,10 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
-	"github.com/s2iservice/pkg/constants"
-	"github.com/s2iservice/pkg/docker"
-	"github.com/s2iservice/pkg/logger"
-	"github.com/s2iservice/pkg/models"
+	"github.com/MagicSong/s2iservice/pkg/constants"
+	"github.com/MagicSong/s2iservice/pkg/docker"
+	"github.com/MagicSong/s2iservice/pkg/logger"
+	"github.com/MagicSong/s2iservice/pkg/models"
 )
 
 const (

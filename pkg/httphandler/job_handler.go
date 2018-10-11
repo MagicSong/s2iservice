@@ -8,16 +8,16 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/s2iservice/pkg/utils/idutils"
+	"github.com/MagicSong/s2iservice/pkg/utils/idutils"
 
 	"github.com/adjust/rmq"
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/docker/distribution/reference"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/s2iservice/pkg/constants"
-	"github.com/s2iservice/pkg/logger"
-	"github.com/s2iservice/pkg/models"
+	"github.com/MagicSong/s2iservice/pkg/constants"
+	"github.com/MagicSong/s2iservice/pkg/logger"
+	"github.com/MagicSong/s2iservice/pkg/models"
 )
 
 type JobService struct {

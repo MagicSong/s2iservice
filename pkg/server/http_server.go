@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/MagicSong/s2iservice/pkg/httphandler"
+	"github.com/MagicSong/s2iservice/pkg/logger"
 	"github.com/adjust/rmq"
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/s2iservice/pkg/httphandler"
-	"github.com/s2iservice/pkg/logger"
 )
 
 type HttpServer struct {

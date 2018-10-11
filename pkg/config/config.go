@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/MagicSong/s2iservice/pkg/logger"
 	"github.com/koding/multiconfig"
-	"github.com/s2iservice/pkg/logger"
 )
 
 const (
@@ -17,6 +17,7 @@ type Config struct {
 	Log     LogConfig
 	MongoDB MongoConfig
 	Redis   RedisConfig
+	Github  GithubConfig
 }
 
 type LogConfig struct {
@@ -36,6 +37,10 @@ type RedisConfig struct {
 	DB          int
 	RMQName     string `default:"Redis Service"`
 	MaxConsumer int    `default:"2"`
+}
+
+type GithubConfig struct {
+	AuthToken string `default:"7f3e20ac3df6b673e0b23c094f78b20c117ec062"`
 }
 
 func (m *MongoConfig) GetUrl() string {

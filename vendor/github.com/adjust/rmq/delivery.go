@@ -2,6 +2,8 @@ package rmq
 
 import (
 	"fmt"
+
+	"gopkg.in/redis.v3"
 )
 
 type Delivery interface {
@@ -16,10 +18,10 @@ type wrapDelivery struct {
 	unackedKey  string
 	rejectedKey string
 	pushKey     string
-	redisClient RedisClient
+	redisClient *redis.Client
 }
 
-func newDelivery(payload, unackedKey, rejectedKey, pushKey string, redisClient RedisClient) *wrapDelivery {
+func newDelivery(payload, unackedKey, rejectedKey, pushKey string, redisClient *redis.Client) *wrapDelivery {
 	return &wrapDelivery{
 		payload:     payload,
 		unackedKey:  unackedKey,
@@ -40,8 +42,12 @@ func (delivery *wrapDelivery) Payload() string {
 func (delivery *wrapDelivery) Ack() bool {
 	// debug(fmt.Sprintf("delivery ack %s", delivery)) // COMMENTOUT
 
-	count, ok := delivery.redisClient.LRem(delivery.unackedKey, 1, delivery.payload)
-	return ok && count == 1
+	result := delivery.redisClient.LRem(delivery.unackedKey, 1, delivery.payload)
+	if redisErrIsNil(result) {
+		return false
+	}
+
+	return result.Val() == 1
 }
 
 func (delivery *wrapDelivery) Reject() bool {
@@ -57,11 +63,11 @@ func (delivery *wrapDelivery) Push() bool {
 }
 
 func (delivery *wrapDelivery) move(key string) bool {
-	if ok := delivery.redisClient.LPush(key, delivery.payload); !ok {
+	if redisErrIsNil(delivery.redisClient.LPush(key, delivery.payload)) {
 		return false
 	}
 
-	if _, ok := delivery.redisClient.LRem(delivery.unackedKey, 1, delivery.payload); !ok {
+	if redisErrIsNil(delivery.redisClient.LRem(delivery.unackedKey, 1, delivery.payload)) {
 		return false
 	}
 

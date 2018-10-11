@@ -4,12 +4,12 @@ BINARY_NAME=devopshere
 .PHONY: all test build clean
 all: build
 build:
-	scripts/build-go.sh
+	hack/build-go.sh
 run:
-	scripts/run-go.sh
+	hack/run-go.sh
 local-run:
-	scripts/run-local-go.sh
+	hack/run-local-go.sh
 image:
-	scripts/build-image.sh
+	hack/build-image.sh
 clean:
 	rm -rf cmd/server

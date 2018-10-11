@@ -9,8 +9,8 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
 
-	"github.com/s2iservice/pkg/constants"
-	"github.com/s2iservice/pkg/models"
+	"github.com/MagicSong/s2iservice/pkg/constants"
+	"github.com/MagicSong/s2iservice/pkg/models"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/mongodb/mongo-go-driver/mongo"
