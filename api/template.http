@@ -33,3 +33,7 @@ Content-Type: application/json
 ### Get Templates
 GET  http://localhost:8001/api/v1alpha1/templates HTTP/1.1
 Authorization: Basic admin admins
+
+### Get Suggest Templates
+GET  http://localhost:8001/api/v1alpha1/suggesttemplates?source=https%3A%2F%2Fgithub.com%2FMagicSong%2Fs2iservice.git HTTP/1.1
+Authorization: Basic admin admins

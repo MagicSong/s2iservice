@@ -40,7 +40,7 @@ type RedisConfig struct {
 }
 
 type GithubConfig struct {
-	AuthToken string `default:"7f3e20ac3df6b673e0b23c094f78b20c117ec062"`
+	AuthToken string `default:"5f87b50d0d77f5825dbc05926fcef9ffe8815a66"`
 }
 
 func (m *MongoConfig) GetUrl() string {

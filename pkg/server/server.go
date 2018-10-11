@@ -7,17 +7,14 @@ import (
 	"github.com/MagicSong/s2iservice/pkg/logger"
 	"github.com/adjust/rmq"
 	"github.com/go-redis/redis"
-	"github.com/google/go-github/github"
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"golang.org/x/oauth2"
 )
 
 type Resources struct {
-	Db           *mongo.Database
-	Redis        rmq.Queue
-	Connection   rmq.Connection
-	GithubClient *github.Client
-	cfg          *config.Config
+	Db         *mongo.Database
+	Redis      rmq.Queue
+	Connection rmq.Connection
+	cfg        *config.Config
 }
 
 type Server struct {
@@ -66,13 +63,4 @@ func (s *Server) openRedis() {
 	connection := rmq.OpenConnectionWithRedisClient(s.Resources.cfg.Redis.RMQName, client)
 	s.Resources.Connection = connection
 	s.Resources.Redis = connection.OpenQueue("S2ITask")
-}
-
-func (s *Server) openGithubClient() {
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: s.Resources.cfg.Github.AuthToken},
-	)
-	tc := oauth2.NewClient(context.Background(), ts)
-	client := github.NewClient(tc)
-	s.Resources.GithubClient = client
 }

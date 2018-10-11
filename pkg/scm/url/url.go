@@ -1,4 +1,4 @@
-package scm
+package url
 
 import (
 	"fmt"

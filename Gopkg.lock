@@ -14,10 +14,10 @@
   version = "v0.4.11"
 
 [[projects]]
+  branch = "master"
   name = "github.com/adjust/rmq"
   packages = ["."]
-  revision = "99798ba09475383696d53071bd9885ac41694a7b"
-  version = "v1.0.0"
+  revision = "150bed51c75ffda9ee0665b68a883a2bdcc137f5"
 
 [[projects]]
   branch = "master"
@@ -330,24 +330,6 @@
   version = "v1.2.0"
 
 [[projects]]
-  branch = "v1"
-  name = "gopkg.in/bsm/ratelimit.v1"
-  packages = ["."]
-  revision = "db14e161995a5177acef654cb0dd785e8ee8bc22"
-
-[[projects]]
-  name = "gopkg.in/redis.v3"
-  packages = [
-    ".",
-    "internal",
-    "internal/consistenthash",
-    "internal/hashtag",
-    "internal/pool"
-  ]
-  revision = "b5e368500d0a508ef8f16e9c2d4025a8a46bcc29"
-  version = "v3.6.4"
-
-[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
@@ -356,6 +338,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4a9135dac781c15e58946fe8575386d5a105685b7a289da4eea3445926924997"
+  inputs-digest = "c970438e12aa9bbf9ecce58dd9437e393cc5525cd7b9d2c27aaa243d7d03488d"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -13,3 +13,4 @@ image:
 	hack/build-image.sh
 clean:
 	rm -rf cmd/server
+ 

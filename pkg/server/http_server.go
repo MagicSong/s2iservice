@@ -17,7 +17,7 @@ type HttpServer struct {
 	Queue      rmq.Queue
 	Jobs       *httphandler.JobService
 	Logs       *httphandler.LogService
-	// Templates  *httphandler.TemplateService
+	Templates  *httphandler.TemplateService
 }
 
 const APIVersion = "/api/v1alpha1"
@@ -32,6 +32,7 @@ func (s *HttpServer) GetRouter() rest.App {
 		rest.Get("/jobs/:jid/logs", s.Logs.GetLoggerHandler),
 		// rest.Post("/templates", s.Templates.CreateTemplatesHandler),
 		// rest.Get("/templates", s.Templates.GetAvailableTemplatesHandler),
+		rest.Get("/suggesttemplates", s.Templates.GetSuggestTemplates),
 	)
 	if err != nil {
 		logger.Critical("%v", err)
@@ -46,7 +47,7 @@ func (s *HttpServer) Serve(r *Resources) {
 	s.Connection = r.Connection
 	s.Jobs = httphandler.NewJobService(r.Db, r.Redis)
 	s.Logs = httphandler.NewLogService(r.Db)
-	// s.Templates = httphandler.NewTemplateService(r.Db)
+	s.Templates = httphandler.NewTemplateService(r.Db, r.cfg.Github.AuthToken)
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	api.Use(&rest.AuthBasicMiddleware{
