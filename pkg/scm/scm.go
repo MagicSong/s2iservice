@@ -24,6 +24,8 @@ func NewTokenClient(token string, url string, gitType GitType) (Gitter, error) {
 	switch gitType {
 	case Github:
 		return provider.NewGithub(token, url)
+	case Gitlab:
+		return provider.NewGitlab(token, url)
 	default:
 		return nil, errors.New("unknow git type")
 	}

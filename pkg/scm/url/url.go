@@ -197,3 +197,10 @@ func trimExt(s string) string {
 	}
 	return s
 }
+
+func (u URL) GetProjectName() string {
+	if u.Organization != "" {
+		return u.Organization + "/" + u.Repository
+	}
+	return u.Repository
+}

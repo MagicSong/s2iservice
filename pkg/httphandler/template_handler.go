@@ -10,14 +10,14 @@ import (
 )
 
 type TemplateService struct {
-	token string
-	Db    *mongo.Database
+	githubToken string
+	Db          *mongo.Database
 }
 
 func NewTemplateService(db *mongo.Database, token string) *TemplateService {
 	return &TemplateService{
-		Db:    db,
-		token: token,
+		Db:          db,
+		githubToken: token,
 	}
 }
 
@@ -32,7 +32,28 @@ func (t *TemplateService) GetSuggestTemplates(w rest.ResponseWriter, r *rest.Req
 		rest.Error(w, "source is required", http.StatusBadRequest)
 		return
 	}
-	git, err := scm.NewTokenClient(t.token, s, 0)
+
+	var gitType scm.GitType
+	var token string
+	ty := v.Get("type")
+
+	switch ty {
+	case "gitlab":
+		gitType = scm.Gitlab
+		token = v.Get("token")
+		if token == "" {
+			rest.Error(w, "Gitlab project should provide access token", http.StatusBadRequest)
+			return
+		}
+	case "github", "":
+		gitType = scm.Github
+		token = t.githubToken
+	default:
+		rest.Error(w, "Unsupported source type", http.StatusBadRequest)
+		return
+	}
+
+	git, err := scm.NewTokenClient(token, s, gitType)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return

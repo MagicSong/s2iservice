@@ -12,3 +12,5 @@
 *.out
 
 cmd/server
+vendor/github.com/docker/docker/hack
+vendor/github.com/docker/docker/project

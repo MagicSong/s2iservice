@@ -253,6 +253,12 @@
   version = "v1.2.2"
 
 [[projects]]
+  name = "github.com/xanzy/go-gitlab"
+  packages = ["."]
+  revision = "bfc0d7b12760e9697abb79967a1f72e83557644d"
+  version = "v0.11.2"
+
+[[projects]]
   branch = "master"
   name = "github.com/xdg/scram"
   packages = ["."]
@@ -338,6 +344,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c970438e12aa9bbf9ecce58dd9437e393cc5525cd7b9d2c27aaa243d7d03488d"
+  inputs-digest = "0956c9e1ab3dd468f6f3df1fdf2b30aaf717bec784d3f2346c5fd77e0bb4d2b1"
   solver-name = "gps-cdcl"
   solver-version = 1
