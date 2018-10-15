@@ -13,13 +13,6 @@ Content-Type: application/json
     "language":"ruby",
     "fields":[
         {
-            "name":"Source",
-            "tips_zh":"代码仓库地址，目前支持git和http/https开头的仓库地址",
-            "tips_en":"url of source code, currently only git and http/https are supported",
-            "field_type":"text",
-            "constraints":"URL"
-        },
-        {
             "name":"RUBYGEM_MIRROR",
             "tips_zh":"rubygem的镜像地址，为了节省流量，这里会设置成集群中的变量",
             "tips_en":"Set this variable to use a custom RubyGems mirror URL to download required gem packages during build process.",

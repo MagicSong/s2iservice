@@ -56,8 +56,6 @@ type LogRow struct {
 }
 
 type FieldInfo struct {
-	ID           uint `json:"id,omitempty" bson:"id"`
-	TemplateID   uint `json:"template_id,omitempty" bson:"template_id"`
 	Name         string
 	TipsZH       string `json:"tips_zh,omitempty" bson:"tips_zh"`
 	TipsEN       string `json:"tips_en,omitempty" bson:"tips_en"`
@@ -67,7 +65,7 @@ type FieldInfo struct {
 	Opts         string `json:"opts,omitempty"`
 }
 type S2ITemplate struct {
-	ID            uint `json:"id,omitempty" bson:"id"`
+	ID            string `json:"id,omitempty" bson:"_id"`
 	Name          string
 	DescriptionEN string `json:"description_en,omitempty" bson:"description_en"`
 	DescriptionZH string `json:"description_zh,omitempty" bson:"description_zh"`

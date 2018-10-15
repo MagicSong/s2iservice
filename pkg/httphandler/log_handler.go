@@ -61,15 +61,15 @@ func (l *LogService) GetLoggerHandler(w rest.ResponseWriter, r *rest.Request) {
 		if err != nil {
 			rest.Error(w, "start_time格式不正确", http.StatusBadRequest)
 			return
-		} else {
-			res, err := getLogByTime(coll, jid, startTime, retryID)
-			if err != nil {
-				rest.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			w.WriteJson(&res)
+		}
+		res, err := getLogByTime(coll, jid, startTime, retryID)
+		if err != nil {
+			rest.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		w.WriteJson(&res)
+		return
+
 	}
 	s = req.Get("from_id")
 	if s != "" {
