@@ -6,9 +6,13 @@ set -o nounset
 set -o pipefail
 
 ROOT=$(dirname $BASH_SOURCE)/..
-echo $ROOT
 cd $ROOT
 
 CGO_ENABLED=0 GOOS=linux go build -v  -a -installsuffix cgo -ldflags '-w'  -o cmd/server build/main.go
 
-docker build -f build/dockerfile -t s2i-builder:0.1 cmd/
+if [ -z $1 ]; then
+   echo "Please specify image tag"
+   exit 1 
+fi
+
+docker build -f build/dockerfile -t $1 cmd/
