@@ -1,30 +1,10 @@
-- [Kubesphere Devops指南](#kubesphere-devops指南)
-    - [一、快速开始](#一快速开始)
-        - [1. 创建DevOPS项目](#1-创建devops项目)
-        - [2. 创建流水线](#2-创建流水线)
-            - [Jenkinsfile in SCM](#jenkinsfile-in-scm)
-            - [Jenkinsfile out of SCM](#jenkinsfile-out-of-scm)
-    - [二、基础组件](#二基础组件)
-        - [1. 流水线](#1-流水线)
-    - [三、高级设置](#三高级设置)
-    - [DevOps工程](#devops工程)
-        - [1. 创建DevOPS项目](#1-创建devops项目)
-        - [2. 成员管理](#2-成员管理)
-        - [2. 可视化编辑器](#2-可视化编辑器)
-        - [3. 高级配置](#3-高级配置)
-    - [凭证](#凭证)
+# 一、快速开始
 
-# Kubesphere Devops指南
-
-> DevOps 是一个面向IT运维的工作流，以持续集成（CI）、持续部署（CD）为基础，来优化程式开发、测试、运维等环节。
-
-## 一、快速开始
-
-### 1. 创建DevOPS项目
+## 1. 创建DevOPS项目
 想要使用Kubesphere的DevOps功能，首先就要创建一个DevOps工程。DevOps工程位于企业空间中，一个企业空间中可以有多个DevOps工程。本节会介绍如何创建一个DevOPS项目，并进行相关的成员配置。
 
-### 2. 创建流水线
-#### Jenkinsfile in SCM
+## 2. 创建流水线
+### Jenkinsfile in SCM
 > Jenkinsfile in SCM指的是将Jenkinsfile本身也放入SCM（Source Control Management，源代码管理），其他使用`git clone`或者其他类似的命令都能够获取到这个Jenkinsfile，从而能快速使用项目的CI/CD功能。这种模式比较常用。
 
 1. 进入DevOPS项目，进入左边菜单中的流水线。点击右边的创建按钮。
@@ -59,7 +39,7 @@
    
    ![log](images/pipeline_log.png)
 
-#### Jenkinsfile out of SCM
+##v# Jenkinsfile out of SCM
 > `Jenkinsfile out of SCM`不同于上面，它的代码仓库中不存储Jenkinsfile，用户需要另外提供Jenkinsfile。由于这种模式代码仓库不存储CI/CD信息，后期维护不方便，所以相比上面一种用的少。
 
 1. 进入一个DevOPS项目，创建一个Pipeline。创建步骤和上面的一样，但是要注意这里不需要选择仓库，让仓库选项为空。
@@ -72,22 +52,21 @@
 3. 创建完成之后页面就会自动跳转到编辑Jenkinsfile的页面，在此页面中通过创建Pipeline的每个步骤执行的内容就可以生成Jenkinsfile，用户无需学习Jenkinsfile的语法，非常方便。
 
    ![pipeline_editor](images/pipeline_editor.png)
-## 二、基础组件
-### 1. 流水线
-流水线代表了应用从代码编译、测试、打包和部署的过程，kubesphere的流水线使用了开源界常用的`Jenkinsfile`来表述一组CI/CD流程。Jenkinsfile是一个文本文件，使用了Jenkins提供的DSL（Domain-Specific Language）语法。为了降低学习Jenkinsfile语法的门槛，Kubesphere提供了可视化编辑器，用户只需要在页面上输入一些信息，就能自动组装成Jenkinsfile。用户也可以直接编辑Jenkinsfile，组合我们平台提供的一些功能插件，为更复杂的场景定制高级Pipeline。
 
-## 三、高级设置
+4. 点击左侧结构编辑区域的加号，增加一个Stage。然后在Stage里点击`增加步骤`,如下图。
+   
+   ![add_stage](images/pipeline_outscm_editor_addstage.png)
 
-##  DevOps工程
+5. 在右边的内容编辑区域，选择git，在URL中输入代码仓库地址，如果没有现成可用的仓库，可以输入<https://github.com/MagicSong/devops.git>做测试用。点击确定之后，给这个Stage取一个名称，可以任意指定，也可以按照下图输入。
 
+   ![add_scm](images/pipeline_outscm_editor_addscm.png)
 
-### 1. 创建DevOPS项目
+6. 然后继续在左边点击+号增加一个Stage，这个Stage用于编译代码。这个操作需要在容器中进行，添加一个`container`的步骤，按照下图进行输入，最后还需给这个Stage取名。
+   
+   ![add_build](images/pipeline_outscm_editor_addbuild.png)
 
-### 2. 成员管理
+7. 编译完成之后，就可以打包镜像了，打包只需要在shell中执行命令就可以了，按照下图添加一个Stage。
 
-### 2. 可视化编辑器
+   ![add_docker](images/pipeline_outscm_editor_adddocker.png)
 
-### 3. 高级配置
-
-## 凭证
-
+8. 点击保存，这样就完成了一个Jenkinsfile的创建。
